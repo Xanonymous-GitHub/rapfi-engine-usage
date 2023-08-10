@@ -28,11 +28,20 @@ RUN cd Rapfi \
 FROM alpine:edge
 LABEL author="xanonymous"
 
+# Install necessary packages using apk add
+RUN apk update \
+    && apk upgrade \
+    && apk add --no-cache \
+    openssl \
+    libtbb
+
 RUN addgroup -S rapfi \
     && adduser -S rapfi -G rapfi \
     --no-create-home \
     --shell /bin/false \
     --disabled-password
+
+USER rapfi
 
 # Working directory setup
 WORKDIR /app
@@ -42,15 +51,6 @@ COPY --from=builder /app/Rapfi/build/pbrain-rapfi /app/rapfi
 COPY --from=builder /app/Networks/mix7nnue /app
 COPY --from=builder /app/Networks/classical /app
 COPY ./config.toml /app/config.toml
-
-# Install necessary packages using apk add
-RUN apk update \
-    && apk upgrade \
-    && apk add --no-cache \
-    openssl \
-    libtbb
-
-USER rapfi
 
 # Set default command to execute
 CMD ["/app/rapfi"]
