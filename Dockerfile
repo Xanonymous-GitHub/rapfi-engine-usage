@@ -5,8 +5,6 @@ FROM alpine:edge as builder
 RUN apk update && apk add \
     cmake \
     g++ \
-    curl \
-    unzip \
     git \
     libtbb-dev \
     make \
