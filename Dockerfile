@@ -24,33 +24,21 @@ RUN cd Rapfi \
     && cmake .. -DCMAKE_BUILD_TYPE=Release \
     && make
 
-# Final Stage
 FROM alpine:edge
 LABEL author="xanonymous"
 
-# Install necessary packages using apk add
 RUN apk update \
     && apk upgrade \
-    && apk add --no-cache \
-    openssl \
-    libtbb
+    && apk add --no-cache openssl libtbb \
+    && rm -rf /var/cache/apk/* \
+    && addgroup -S rapfi \
+    && adduser -S rapfi -G rapfi --no-create-home --shell /bin/false --disabled-password
 
-RUN addgroup -S rapfi \
-    && adduser -S rapfi -G rapfi \
-    --no-create-home \
-    --shell /bin/false \
-    --disabled-password
-
-USER rapfi
-
-# Working directory setup
 WORKDIR /app
 
-# Copy necessary files from builder stage
-COPY --from=builder /app/Rapfi/build/pbrain-rapfi /app/rapfi
-COPY --from=builder /app/Networks/mix7nnue /app
-COPY --from=builder /app/Networks/classical /app
-COPY ./config.toml /app/config.toml
+# Copy necessary files from builder stage with specified owner
+COPY --from=builder --chown=rapfi:rapfi /app/Rapfi/build/pbrain-rapfi /app/rapfi
+COPY --from=builder --chown=rapfi:rapfi /app/Networks/mix7nnue /app/Networks/classical ./config.toml /app/
 
-# Set default command to execute
+USER rapfi
 CMD ["/app/rapfi"]
