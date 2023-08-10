@@ -38,7 +38,8 @@ WORKDIR /app
 
 # Copy necessary files from builder stage with specified owner
 COPY --from=builder --chown=rapfi:rapfi /app/Rapfi/build/pbrain-rapfi /app/rapfi
-COPY --from=builder --chown=rapfi:rapfi /app/Networks/mix7nnue /app/Networks/classical ./config.toml /app/
+COPY --from=builder --chown=rapfi:rapfi /app/Networks/mix7nnue /app/Networks/classical /app/
+COPY --chown=rapfi:rapfi ./config.toml /app/config.toml
 
 USER rapfi
 CMD ["/app/rapfi"]
